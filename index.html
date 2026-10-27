@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Off the Grid in Paradise – Great Big Story</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --correct: #22c55e;
+      --incorrect: #ef4444;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px 60px;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    h1 {
+      font-size: 1.65rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    .video-fallback {
+      text-align: center;
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .video-fallback a { color: var(--accent); }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .nav button {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav button:hover { border-color: var(--accent); color: var(--accent); }
+
+    .nav button.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .instructions {
+      color: var(--muted);
+      margin-bottom: 22px;
+      font-size: 1.02rem;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .question {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .question h3 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      color: #f1f5f9;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+
+    .option:hover { border-color: var(--accent); background: #1e293b; }
+
+    .option input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+      width: 17px; height: 17px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .option span { flex: 1; }
+
+    .option.correct {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: var(--correct);
+      color: #bbf7d0;
+    }
+
+    .option.incorrect {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--incorrect);
+      color: #fecaca;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0 16px;
+      align-items: center;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button.primary:hover { opacity: 0.9; }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #score {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin-left: 8px;
+    }
+
+    .reflection-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 22px;
+    }
+
+    .reflection-box p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .modal .score-big {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+
+    .modal .message {
+      font-size: 1.25rem;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    .modal button {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal button:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Living Off the Grid in Paradise</h1>
+    <p class="subtitle">by Great Big Story</p>
+
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/7YNPbY6deQ0?rel=0"
+        title="Living Off the Grid in Paradise – Great Big Story"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p class="video-fallback">
+      If the video appears as a black square,
+      <a href="https://youtu.be/7YNPbY6deQ0" target="_blank" rel="noopener">watch it directly on YouTube here</a>.
+    </p>
+
+    <div class="nav">
+      <button class="active" data-page="1">Listening Comprehension</button>
+      <button data-page="2">Reflection</button>
+    </div>
+
+    <!-- PAGE 1 -->
+    <div class="page active" id="page1">
+      <p class="instructions">Watch the video and answer the questions below. Some questions have more than one correct answer.</p>
+
+      <form id="quizForm">
+        <div class="question" data-type="single" data-correct="B">
+          <h3>1. How far is Warrick's home from the nearest road?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q1" value="A"> <span>A) About four hours' walk.</span></label>
+            <label class="option"><input type="radio" name="q1" value="B"> <span>B) Four days' walk.</span></label>
+            <label class="option"><input type="radio" name="q1" value="C"> <span>C) Two days' walk.</span></label>
+            <label class="option"><input type="radio" name="q1" value="D"> <span>D) A day's journey by boat.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="multi" data-correct="B,C">
+          <h3>2. What makes travelling to Warrick's home particularly challenging?</h3>
+          <p class="note">Choose TWO answers</p>
+          <div class="options">
+            <label class="option"><input type="checkbox" name="q2" value="A"> <span>A) The area is accessible only by car.</span></label>
+            <label class="option"><input type="checkbox" name="q2" value="B"> <span>B) The weather and tides are unpredictable.</span></label>
+            <label class="option"><input type="checkbox" name="q2" value="C"> <span>C) The area can be reached by aircraft, on foot, or sometimes by boat.</span></label>
+            <label class="option"><input type="checkbox" name="q2" value="D"> <span>D) There are too many roads leading to the area.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="C">
+          <h3>3. How does Warrick generate electricity and maintain communication with the outside world?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="A"> <span>A) He uses a diesel generator and a mobile phone.</span></label>
+            <label class="option"><input type="radio" name="q3" value="B"> <span>B) He relies on wind turbines and radio towers.</span></label>
+            <label class="option"><input type="radio" name="q3" value="C"> <span>C) He uses solar panels and satellite communications.</span></label>
+            <label class="option"><input type="radio" name="q3" value="D"> <span>D) He receives electricity from a nearby village.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="D">
+          <h3>4. How does Warrick obtain most of his food and drinking water?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q4" value="A"> <span>A) He buys food from nearby towns and collects water from rivers.</span></label>
+            <label class="option"><input type="radio" name="q4" value="B"> <span>B) He grows all his own vegetables and uses well water.</span></label>
+            <label class="option"><input type="radio" name="q4" value="C"> <span>C) He relies on food deliveries and bottled water.</span></label>
+            <label class="option"><input type="radio" name="q4" value="D"> <span>D) He catches fish, hunts deer, and collects rainwater for drinking.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="multi" data-correct="A,C">
+          <h3>5. What does Warrick do when the weather and conditions change?</h3>
+          <p class="note">Choose TWO answers</p>
+          <div class="options">
+            <label class="option"><input type="checkbox" name="q5" value="A"> <span>A) He chooses different outdoor activities depending on the conditions.</span></label>
+            <label class="option"><input type="checkbox" name="q5" value="B"> <span>B) He always goes fishing, regardless of the weather.</span></label>
+            <label class="option"><input type="checkbox" name="q5" value="C"> <span>C) He might go surfing when the waves are good.</span></label>
+            <label class="option"><input type="checkbox" name="q5" value="D"> <span>D) He stays indoors whenever the weather changes.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="B">
+          <h3>6. According to Warrick, why has the local community become so close-knit?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="A"> <span>A) Everyone works for the same company.</span></label>
+            <label class="option"><input type="radio" name="q6" value="B"> <span>B) The challenging environment and shared passion for nature bring people together.</span></label>
+            <label class="option"><input type="radio" name="q6" value="C"> <span>C) The government requires residents to help each other.</span></label>
+            <label class="option"><input type="radio" name="q6" value="D"> <span>D) The residents regularly travel to nearby cities together.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="C">
+          <h3>7. How does Warrick react when something breaks or goes wrong?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q7" value="A"> <span>A) He immediately abandons his plans and returns to civilisation.</span></label>
+            <label class="option"><input type="radio" name="q7" value="B"> <span>B) He becomes frustrated because everything must work perfectly.</span></label>
+            <label class="option"><input type="radio" name="q7" value="C"> <span>C) He reminds himself that being in such a beautiful place is what matters most.</span></label>
+            <label class="option"><input type="radio" name="q7" value="D"> <span>D) He expects his neighbours to fix every problem.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="A">
+          <h3>8. What does Warrick find particularly remarkable about the landscape?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q8" value="A"> <span>A) The combination of ocean, forest, snow-capped mountains, glacier-shaped bays, and clear rivers.</span></label>
+            <label class="option"><input type="radio" name="q8" value="B"> <span>B) The large number of modern buildings surrounded by mountains.</span></label>
+            <label class="option"><input type="radio" name="q8" value="C"> <span>C) The extensive road network connecting the forests and rivers.</span></label>
+            <label class="option"><input type="radio" name="q8" value="D"> <span>D) The warm climate and tropical beaches.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="D">
+          <h3>9. What does Warrick say about the people who visit the area?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q9" value="A"> <span>A) They mainly come to find work in the national park.</span></label>
+            <label class="option"><input type="radio" name="q9" value="B"> <span>B) They prefer comfortable accommodation and organised tours.</span></label>
+            <label class="option"><input type="radio" name="q9" value="C"> <span>C) They are usually uninterested in outdoor activities.</span></label>
+            <label class="option"><input type="radio" name="q9" value="D"> <span>D) They get to experience nature in a largely unspoilt state.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-type="single" data-correct="B">
+          <h3>10. What is Warrick's main goal regarding the environment?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q10" value="A"> <span>A) To develop more tourist facilities throughout the park.</span></label>
+            <label class="option"><input type="radio" name="q10" value="B"> <span>B) To preserve the natural environment in its pristine condition.</span></label>
+            <label class="option"><input type="radio" name="q10" value="C"> <span>C) To encourage more people to settle permanently in the area.</span></label>
+            <label class="option"><input type="radio" name="q10" value="D"> <span>D) To make the wilderness easier to access by road.</span></label>
+          </div>
+        </div>
+      </form>
+
+      <div class="controls">
+        <button type="button" class="primary" id="checkBtn">Check answers</button>
+        <button type="button" class="secondary" id="resetBtn">Reset</button>
+        <span id="score"></span>
+      </div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div class="page" id="page2">
+      <div class="reflection-box">
+        <p>Imagine you wanted to write a comment for this video. What do you think about Warrick's lifestyle? Can you imagine living in such a place yourself? Why (not)? Send your answer to your teacher in DMs before the lesson.</p>
+      </div>
+    </div>
+
+    <p class="footer-note">Select your answers on the Listening page, then click “Check answers”.</p>
+  </div>
+
+  <div class="modal-overlay" id="scoreModal">
+    <div class="modal">
+      <div class="score-big" id="modalScore"></div>
+      <div class="message" id="modalMessage"></div>
+      <button type="button" id="modalClose">OK</button>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('page' + btn.dataset.page).classList.add('active');
+      });
+    });
+
+    const scoreMessages = {
+       0: "🫣 Try again!",
+       1: "🐌 Keep at it!",
+       2: "🪴 You're learning!",
+       3: "🐨 Good effort!",
+       4: "🍓 Getting better!",
+       5: "🐳 Pretty good!",
+       6: "🎨 Nice work!",
+       7: "🦄 Very good!",
+       8: "⚡ Great work!",
+       9: "🥳 Fantastic!",
+      10: "💎 Outstanding!"
+    };
+
+    function showScorePopup(score, total) {
+      document.getElementById('modalScore').textContent = `${score} / ${total}`;
+      document.getElementById('modalMessage').textContent = scoreMessages[score] || scoreMessages[0];
+      document.getElementById('scoreModal').classList.add('show');
+    }
+
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('scoreModal').classList.remove('show');
+    });
+
+    document.getElementById('scoreModal').addEventListener('click', (e) => {
+      if (e.target.id === 'scoreModal') {
+        document.getElementById('scoreModal').classList.remove('show');
+      }
+    });
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      let correctCount = 0;
+      const questions = document.querySelectorAll('#page1 .question');
+
+      questions.forEach(q => {
+        const type = q.dataset.type;
+        const correctStr = q.dataset.correct;
+        const opts = q.querySelectorAll('.option');
+        opts.forEach(o => o.classList.remove('correct', 'incorrect'));
+
+        if (type === 'single') {
+          const selected = q.querySelector('input:checked');
+          if (selected) {
+            const opt = selected.closest('.option');
+            if (selected.value === correctStr) {
+              opt.classList.add('correct');
+              correctCount++;
+            } else {
+              opt.classList.add('incorrect');
+              opts.forEach(o => {
+                if (o.querySelector('input').value === correctStr) o.classList.add('correct');
+              });
+            }
+          }
+        } else {
+          const correctSet = new Set(correctStr.split(','));
+          const selectedInputs = q.querySelectorAll('input:checked');
+          const selectedSet = new Set([...selectedInputs].map(i => i.value));
+
+          let allCorrect = true;
+          opts.forEach(o => {
+            const val = o.querySelector('input').value;
+            const isSelected = selectedSet.has(val);
+            const shouldBe = correctSet.has(val);
+
+            if (isSelected && shouldBe) {
+              o.classList.add('correct');
+            } else if (isSelected && !shouldBe) {
+              o.classList.add('incorrect');
+              allCorrect = false;
+            } else if (!isSelected && shouldBe) {
+              o.classList.add('correct');
+              allCorrect = false;
+            }
+          });
+
+          if (allCorrect && selectedSet.size === correctSet.size) {
+            correctCount++;
+          }
+        }
+      });
+
+      document.getElementById('score').textContent = `Score: ${correctCount} / ${questions.length}`;
+      showScorePopup(correctCount, questions.length);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('quizForm').reset();
+      document.querySelectorAll('#page1 .option').forEach(o => o.classList.remove('correct', 'incorrect'));
+      document.getElementById('score').textContent = '';
+    });
+  </script>
+</body>
+</html>
